@@ -1,19 +1,19 @@
-import { ProfileType } from "./types";
+import { JobType, ProfileType } from "./types";
 
 const API_BASE = "http://localhost:3000";
 
 function callApi(
-  url: string,
+  path: string,
   config: {
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-    body?: BodyInit;
+    body?: Record<string, any>;
   }
 ) {
   const { method, body } = config;
 
-  return fetch(`${API_BASE}${url}`, {
+  return fetch(`${API_BASE}${path}`, {
     method,
-    body,
+    body: JSON.stringify(body),
     headers: {
       "Content-Type": "application/json",
     },
@@ -26,34 +26,40 @@ function callApi(
     })
     .catch((error) => {
       console.error("Error:", error);
+      alert("An error occured. Check console.");
     });
 }
 
 // Profile page
-export const getUserProfile: () => Promise<ProfileType> = () => {
-  return new Promise((res) => {
-    setTimeout(() => {
-      res({
-        name: "ksaj",
-        email: "sncj@cdm.com",
-        skills: "java,python",
-        github: "ksokdo",
-      });
-    }, 0);
-  });
+export const getUserProfile: (id: number) => Promise<ProfileType> = (
+  id: number
+) => {
+  return callApi(`/freelancer/${id}`, { method: "GET" });
 };
 
-export const saveUserProfile = (data: unknown, id?: number) => {
+export const saveUserProfile = (data: Record<string, any>, id?: number) => {
   const method = id ? "PUT" : "POST";
-  return callApi("/freelancer", { method, body: JSON.stringify(data) });
+  return callApi("/freelancer", { method, body: data });
 };
 
 export const fetchGithubRepos = () => {};
 
 // Recruiter
 
-// Listing Page
-// export const saveUserProfile = () => {};
+// Jobs Page
+export const getJobs = (): Promise<JobType[]> => {
+  return callApi("/job", { method: "GET" });
+};
+
+export const applyForJob = (freelancerId: number, jobId: number) => {
+  return callApi("/application", {
+    method: "POST",
+    body: {
+      freelancerId,
+      jobId,
+    },
+  });
+};
 
 // export const saveUserProfile = () => {};
 

@@ -1,6 +1,7 @@
-import { ChangeEventHandler, useEffect, useState } from "react";
-import { getUserProfile, saveUserProfile } from "../utils";
-import { ProfileType } from "../types";
+import { ChangeEventHandler, useContext, useEffect, useState } from "react";
+import { ProfileType } from "../../types";
+import { getUserProfile, saveUserProfile } from "../../utils";
+import { UserContext } from "../../contexts/userContext";
 
 const defaultFormState = {
   name: "",
@@ -12,9 +13,12 @@ const defaultFormState = {
 const Profile = () => {
   const [form, setForm] = useState<ProfileType>(defaultFormState);
   const [error, setError] = useState(defaultFormState);
+  const user = useContext(UserContext);
+  const isFreelancer = user && user.type === "FREELANCER";
 
   useEffect(() => {
-    getUserProfile().then((data) => setForm(data));
+    if (isFreelancer)
+      getUserProfile(user ? user.id : 0).then((data) => setForm(data));
   }, []);
 
   const handleInput: ChangeEventHandler<
@@ -65,13 +69,17 @@ const Profile = () => {
   const handleSubmit = () => {
     saveUserProfile(form)
       .then(() => {
-        alert("Profile created successfully");
+        alert("Profile updated successfully");
       })
       .catch((err) => {
         alert("An error occured. Check logs.");
         console.error(err);
       });
   };
+
+  if (!isFreelancer) {
+    return <h2>Not Authorised for Profile</h2>;
+  }
 
   return (
     <div>
