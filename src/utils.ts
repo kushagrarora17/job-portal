@@ -1,4 +1,4 @@
-import { JobType, ProfileType } from "./types";
+import { JobType, ProfileType, UserContextType } from "./types";
 
 const API_BASE = "http://localhost:3000";
 
@@ -58,6 +58,20 @@ export const applyForJob = (freelancerId: number, jobId: number) => {
       freelancerId,
       jobId,
     },
+  });
+};
+
+export const getApplications = (
+  userId: number,
+  userType: "FREELANCER" | "RECRUITER"
+) => {
+  if (userType === "FREELANCER") {
+    return callApi(`/application/freelancer/${userId}`, {
+      method: "GET",
+    });
+  }
+  return callApi(`/application/recruiter/${userId}`, {
+    method: "GET",
   });
 };
 

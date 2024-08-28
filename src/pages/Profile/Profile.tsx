@@ -82,8 +82,9 @@ const Profile = () => {
   }
 
   return (
-    <div>
-      <div>
+    <div className="profile-page">
+      <h3 className="page-heading">Profile</h3>
+      <div className="form-group">
         <label>Full Name</label>
         <input
           type="text"
@@ -94,7 +95,7 @@ const Profile = () => {
         />
         {error.name && <p>{error.name}</p>}
       </div>
-      <div>
+      <div className="form-group">
         <label>Email Id</label>
         <input
           type="text"
@@ -105,7 +106,7 @@ const Profile = () => {
         />
         {error.email && <p>{error.email}</p>}
       </div>
-      <div>
+      <div className="form-group">
         <label>Skills</label>
         <textarea
           placeholder="Enter comma (,) separated values"
@@ -115,7 +116,7 @@ const Profile = () => {
         />
         {error.skills && <p>{error.skills}</p>}
       </div>
-      <div>
+      <div className="form-group">
         <label>Github Profile</label>
         <input
           type="text"
@@ -126,7 +127,7 @@ const Profile = () => {
         />
         {error.github && <p>{error.github}</p>}
       </div>
-      <div>
+      <div className="form-group">
         <button disabled={hasErrors} onClick={handleSubmit}>
           Submit
         </button>

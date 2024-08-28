@@ -1,38 +1,58 @@
 import { useContext } from "react";
 import { UserContext } from "../contexts/userContext";
-import { Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 type HeaderProps = {
   onLogout: VoidFunction;
 };
 function Header({ onLogout }: HeaderProps) {
   const user = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    onLogout();
+    navigate("/");
+  };
   return (
-    <header>
-      <h1>Job We Met</h1>
+    <header className="header">
+      <h1>Job Finder</h1>
 
       {user && (
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/profile">Profile</Link>
-            </li>
-            <li>
-              <Link to="/jobs">Jobs</Link>
-            </li>
-            <li>
-              <Link to="/applications">Applications</Link>
-            </li>
-          </ul>
-          <div>
-            Hello, {user.name}!<button onClick={onLogout}>Log out</button>
-          </div>
-        </nav>
+        <>
+          <nav>
+            <ul>
+              <li>
+                <NavLink
+                  to="/"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  Dashboard
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  Profile
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/jobs"
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  Jobs
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+
+          <span>
+            Hello, {user.name}! <button onClick={logoutHandler}>Log out</button>
+          </span>
+        </>
       )}
-      <hr />
     </header>
   );
 }

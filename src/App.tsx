@@ -4,38 +4,70 @@ import Profile from "./pages/Profile/Profile";
 import Jobs from "./pages/Jobs/Jobs";
 import { UserContext } from "./contexts/userContext";
 import React from "react";
-import { UserContextType } from "./types";
+import { ApplicationType, UserContextType } from "./types";
 import Header from "./components/Header";
 import LoginPanel from "./components/LoginPanel";
+import { ApplicationContext } from "./contexts/applicationsContext";
+import { getApplications } from "./utils";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   const userFromStorage = sessionStorage.getItem("user");
+  const applicationsFromStorage = sessionStorage.getItem("applications");
+
   const [user, setUser] = React.useState<UserContextType>(
     userFromStorage ? JSON.parse(userFromStorage) : null
+  );
+  const [applications, setApplications] = React.useState(
+    applicationsFromStorage ? JSON.parse(applicationsFromStorage) : []
   );
 
   const sessionHandler = (user: UserContextType) => {
     sessionStorage.setItem("user", JSON.stringify(user));
     setUser(user);
-    console.log({ user });
+  };
+
+  const applicationHandler = (applications: ApplicationType[]) => {
+    sessionStorage.setItem("applications", JSON.stringify(applications));
+    setApplications(applications);
+  };
+
+  const fetchApplications = (user: UserContextType) => {
     if (user === null) {
-      redirect("/");
+      applicationHandler([]);
+    } else {
+      getApplications(user.id, user.type).then((apps) => {
+        applicationHandler(apps);
+      });
     }
   };
+
+  React.useEffect(() => {
+    fetchApplications(user);
+  }, [user]);
 
   return (
     <BrowserRouter>
       <UserContext.Provider value={user}>
-        <div>
-          <Header onLogout={() => sessionHandler(null)} />
-          {!user && <LoginPanel setLogin={sessionHandler} />}
-          <Routes>
-            <Route path="/" element={null} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/profile" element={<Profile />} />
-            {/* <Route path="/create-job" element={} /> */}
-          </Routes>
-        </div>
+        <ApplicationContext.Provider
+          value={{
+            applications,
+            refreshApplications: () => fetchApplications(user),
+          }}
+        >
+          <div>
+            <Header onLogout={() => sessionHandler(null)} />
+            <main className="main">
+              {!user && <LoginPanel setLogin={sessionHandler} />}
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/profile" element={<Profile />} />
+                {/* <Route path="/applications" element={} /> */}
+              </Routes>
+            </main>
+          </div>
+        </ApplicationContext.Provider>
       </UserContext.Provider>
     </BrowserRouter>
   );

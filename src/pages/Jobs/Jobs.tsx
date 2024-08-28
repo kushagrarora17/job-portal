@@ -14,8 +14,8 @@ const Jobs = () => {
 
   return (
     <div>
-      <h2>Jobs</h2>
-      <div>
+      <h3 className="page-heading">Jobs</h3>
+      <div className="job-wrapper">
         {jobs.map((job) => (
           <JobCard job={job} key={job.id} />
         ))}

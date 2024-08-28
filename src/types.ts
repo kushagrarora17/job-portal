@@ -19,3 +19,11 @@ export type JobType = {
   skills: string;
   recruiterId: number;
 };
+
+export type ApplicationType = {
+  id: number;
+  jobId: number;
+  freelancerId: number;
+  status: "APPLIED" | "SUBMITTED" | "REJECTED";
+  job: JobType;
+};

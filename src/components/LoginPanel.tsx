@@ -41,15 +41,22 @@ const users: UserContextType[] = [
 function LoginPanel({ setLogin }: LoginPanelProps) {
   return (
     <div>
-      {users.map(
-        (user) =>
-          user && (
-            <button key={user.name} onClick={() => setLogin(user)}>
-              <div>{user.name}</div>
-              <div>{user.type}</div>
-            </button>
-          )
-      )}
+      <h3 className="page-heading">Choose a user to login</h3>
+      <div className="login-wrapper">
+        {users.map(
+          (user) =>
+            user && (
+              <button
+                className="login-item"
+                key={user.name}
+                onClick={() => setLogin(user)}
+              >
+                <h4>{user.name}</h4>
+                <div>{user.type}</div>
+              </button>
+            )
+        )}
+      </div>
     </div>
   );
 }
