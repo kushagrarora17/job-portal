@@ -10,26 +10,23 @@ import LoginPanel from "./components/LoginPanel";
 import { ApplicationContext } from "./contexts/applicationsContext";
 import { getApplications } from "./utils";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import { ErrorBoundary } from "react-error-boundary";
 
 function App() {
   const userFromStorage = sessionStorage.getItem("user");
-  const applicationsFromStorage = sessionStorage.getItem("applications");
 
   const [user, setUser] = React.useState<UserContextType>(
     userFromStorage ? JSON.parse(userFromStorage) : null
   );
-  const [applications, setApplications] = React.useState(
-    applicationsFromStorage ? JSON.parse(applicationsFromStorage) : []
-  );
+  const [applications, setApplications] = React.useState<ApplicationType[]>([]);
 
   const sessionHandler = (user: UserContextType) => {
     sessionStorage.setItem("user", JSON.stringify(user));
     setUser(user);
   };
 
-  const applicationHandler = (applications: ApplicationType[]) => {
-    sessionStorage.setItem("applications", JSON.stringify(applications));
-    setApplications(applications);
+  const applicationHandler = (newApplications: ApplicationType[]) => {
+    setApplications(newApplications);
   };
 
   const fetchApplications = (user: UserContextType) => {
@@ -58,13 +55,15 @@ function App() {
           <div>
             <Header onLogout={() => sessionHandler(null)} />
             <main className="main">
-              {!user && <LoginPanel setLogin={sessionHandler} />}
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/jobs" element={<Jobs />} />
-                <Route path="/profile" element={<Profile />} />
-                {/* <Route path="/applications" element={} /> */}
-              </Routes>
+              <ErrorBoundary fallback={<div>Something went wrong</div>}>
+                {!user && <LoginPanel setLogin={sessionHandler} />}
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/jobs" element={<Jobs />} />
+                  <Route path="/profile" element={<Profile />} />
+                  {/* <Route path="/applications" element={} /> */}
+                </Routes>
+              </ErrorBoundary>
             </main>
           </div>
         </ApplicationContext.Provider>

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { ApplicationType } from "../../types";
 
 function RecruiterTable({ applications }: { applications: ApplicationType[] }) {
@@ -13,7 +13,7 @@ function RecruiterTable({ applications }: { applications: ApplicationType[] }) {
       }
     }
     return map;
-  }, []);
+  }, [applications]);
   return (
     <table>
       <thead>

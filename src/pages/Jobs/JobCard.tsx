@@ -1,13 +1,14 @@
 import { useContext, useMemo } from "react";
 import { JobType } from "../../types";
 import { UserContext } from "../../contexts/userContext";
-import { applyForJob } from "../../utils";
+import { applyForJob, deleteJob } from "../../utils";
 import { ApplicationContext } from "../../contexts/applicationsContext";
 
 type JobCardProps = {
   job: JobType;
+  removeJob: (id: number) => void;
 };
-function JobCard({ job }: JobCardProps) {
+function JobCard({ job, removeJob }: JobCardProps) {
   const user = useContext(UserContext);
   const { applications, refreshApplications } = useContext(ApplicationContext);
 
@@ -37,7 +38,11 @@ function JobCard({ job }: JobCardProps) {
 
   const editHandler = () => {};
 
-  const deleteHandler = () => {};
+  const deleteHandler = async () => {
+    await deleteJob(job.id).then(() => {
+      removeJob(job.id);
+    });
+  };
 
   return (
     <article className="job-card">

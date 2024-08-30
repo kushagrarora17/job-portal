@@ -1,8 +1,9 @@
-import { JobType, ProfileType, UserContextType } from "./types";
+import { JobType, ProfileType } from "./types";
+import axios from "axios";
 
 const API_BASE = "http://localhost:3000";
 
-function callApi(
+async function callApi(
   path: string,
   config: {
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -11,23 +12,33 @@ function callApi(
 ) {
   const { method, body } = config;
 
-  return fetch(`${API_BASE}${path}`, {
+  const { data } = await axios(`${API_BASE}${path}`, {
     method,
-    body: JSON.stringify(body),
+    data: body,
     headers: {
       "Content-Type": "application/json",
     },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("An error occured. Check console.");
-    });
+  }).catch(function (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+    return { data: null };
+  });
+
+  return data;
 }
 
 // Profile page
@@ -47,8 +58,15 @@ export const fetchGithubRepos = () => {};
 // Recruiter
 
 // Jobs Page
-export const getJobs = (): Promise<JobType[]> => {
-  return callApi("/job", { method: "GET" });
+export const getJobs = (
+  userid: number,
+  userType: "FREELANCER" | "RECRUITER"
+): Promise<JobType[]> => {
+  let url = `/job/recruiter/${userid}`;
+  if (userType === "FREELANCER") {
+    url = `/job`;
+  }
+  return callApi(url, { method: "GET" });
 };
 
 export const applyForJob = (freelancerId: number, jobId: number) => {
@@ -59,6 +77,10 @@ export const applyForJob = (freelancerId: number, jobId: number) => {
       jobId,
     },
   });
+};
+
+export const deleteJob = (id: number): Promise<void> => {
+  return callApi(`/job/${id}`, { method: "DELETE" });
 };
 
 export const getApplications = (
